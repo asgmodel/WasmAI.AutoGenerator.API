@@ -1,0 +1,49 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.35906.104 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WasmAI.AutoGenerator.Patterns", "WasmAI.AutoGenerator.Patterns\WasmAI.AutoGenerator.Patterns.csproj", "{73B43D38-DB69-499D-8894-606A949825F2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WasmAI.AutoGenerator.Coder", "WasmAI.AutoGenerator.Coder\WasmAI.AutoGenerator.Coder.csproj", "{7AF71448-0937-4132-A75B-D4B365FBF2D8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WasmAI.AutoGenerator.Config", "WasmAI.AutoGenerator.Config\WasmAI.AutoGenerator.Config.csproj", "{0132789B-72AD-4816-AF16-156B1CC544AA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WasmAI.AutoGenerator.Custom", "WasmAI.AutoGenerator.Custom\WasmAI.AutoGenerator.Custom.csproj", "{36BD4024-3451-4323-8A36-3174C86B1F53}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WasmAI.AutoGenerator", "WasmAI.AutoGenerator\WasmAI.AutoGenerator.csproj", "{36CCDEAF-EF81-4132-97D4-9BCD1EE2AE43}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{73B43D38-DB69-499D-8894-606A949825F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73B43D38-DB69-499D-8894-606A949825F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73B43D38-DB69-499D-8894-606A949825F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73B43D38-DB69-499D-8894-606A949825F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7AF71448-0937-4132-A75B-D4B365FBF2D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7AF71448-0937-4132-A75B-D4B365FBF2D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7AF71448-0937-4132-A75B-D4B365FBF2D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7AF71448-0937-4132-A75B-D4B365FBF2D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0132789B-72AD-4816-AF16-156B1CC544AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0132789B-72AD-4816-AF16-156B1CC544AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0132789B-72AD-4816-AF16-156B1CC544AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0132789B-72AD-4816-AF16-156B1CC544AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36BD4024-3451-4323-8A36-3174C86B1F53}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36BD4024-3451-4323-8A36-3174C86B1F53}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36BD4024-3451-4323-8A36-3174C86B1F53}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36BD4024-3451-4323-8A36-3174C86B1F53}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36CCDEAF-EF81-4132-97D4-9BCD1EE2AE43}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36CCDEAF-EF81-4132-97D4-9BCD1EE2AE43}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36CCDEAF-EF81-4132-97D4-9BCD1EE2AE43}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36CCDEAF-EF81-4132-97D4-9BCD1EE2AE43}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CFC142A5-390A-4CFA-B969-E2DDA88DB5A6}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,42 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="AutoMapper" Version="14.0.0"  />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3"   />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.8"   />
+
+		<PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.3.1"   />
+		<PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="9.0.3" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.3" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.3"   />
+	</ItemGroup>
+
+
+	<PropertyGroup>
+		<PackageId> WasmAI.AutoGenerator.Config</PackageId>
+		<Version>1.0.1</Version>
+
+		<Authors>Anas Al-Tawil</Authors>
+
+		<Company>GitHub</Company>
+		<PackageDescription>
+
+			WasmAI.AutoGenerator.Config
+		</PackageDescription>
+		<RepositoryUrl>
+			https://github.com/asgmodel/WasmAI.AutoGenerator.git
+		</RepositoryUrl>
+
+		<!-- Optional Enhancements -->
+
+	</PropertyGroup>
+
+</Project>

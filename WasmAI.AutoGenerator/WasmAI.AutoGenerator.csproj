@@ -1,0 +1,48 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="README.md" Pack="true" PackagePath="" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="WasmAI.AutoNotificationService" Version="1.0.0" />
+		<PackageReference Include="Quartz" Version="3.14.0" />
+		<PackageReference Include="Quartz.AspNetCore" Version="3.14.0" />
+		<PackageReference Include="xunit.extensibility.core" Version="2.9.3" PrivateAssets="all" />
+		<PackageReference Include="Hangfire" Version="1.8.18" PrivateAssets="all" />
+		<PackageReference Include="Hangfire.SqlServer" Version="1.8.18" PrivateAssets="all" />
+		<PackageReference Include="Microsoft.Data.SqlClient" Version="6.0.1" PrivateAssets="all" />
+
+		<PackageReference Include="WasmAI.ConditionChecker" Version="1.0.1" />
+
+
+
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="WasmAI.AutoGenerator.Coder" Version="1.0.3" />
+		<PackageReference Include="WasmAI.AutoGenerator.Patterns" Version="1.0.2" />
+	</ItemGroup>
+	<PropertyGroup>
+		<PackageId>WasmAI.AutoGenerator</PackageId>
+		<Version>1.1.0</Version>
+
+		<Authors>Anas Al-Tawil</Authors>
+
+		<Company>GitHub</Company>
+		<PackageDescription>is a powerful code-generation library for .NET 8 that automates the scaffolding of backend components like models, services, controllers, and more—based on a flexible folder configuration.</PackageDescription>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageProjectUrl>http://dashwork.runasp.net/</PackageProjectUrl>
+		<RepositoryUrl>
+			https://github.com/asgmodel/WasmAI.AutoGenerator.git
+		</RepositoryUrl>
+		<!-- Optional Enhancements -->
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<IncludeSymbols>true</IncludeSymbols>
+	</PropertyGroup>
+</Project>

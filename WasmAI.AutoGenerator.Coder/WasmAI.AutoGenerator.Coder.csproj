@@ -1,0 +1,54 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<ItemGroup>
+
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.3.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.3.0" />
+		<PackageReference Include="Microsoft.CodeAnalysis" Version="4.8.0" />
+
+
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.3">
+
+
+		</PackageReference>
+		<PackageReference Include="WasmAI.ConditionChecker" Version="1.0.1" />
+		<PackageReference Include="Google_GenerativeAI" Version="2.5.9" />
+	</ItemGroup>
+
+
+
+	<ItemGroup>
+		<Folder Include="TMRole\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="WasmAI.AutoGenerator.Custom" Version="1.0.1" />
+	</ItemGroup>
+	<PropertyGroup>
+		<PackageId> WasmAI.AutoGenerator.Coder</PackageId>
+		<Version>1.0.3</Version>
+
+		<Authors>Anas Al-Tawil</Authors>
+
+		<Company>GitHub</Company>
+		<PackageDescription>
+
+			WasmAI.AutoGenerator.Coder
+		</PackageDescription>
+		<RepositoryUrl>
+			https://github.com/asgmodel/WasmAI.AutoGenerator.git
+		</RepositoryUrl>
+
+		<!-- Optional Enhancements -->
+
+	</PropertyGroup>
+</Project>

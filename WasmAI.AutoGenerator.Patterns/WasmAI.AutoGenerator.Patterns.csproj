@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.3.0" />
+		<PackageReference Include="WasmAI.AutoGenerator.Config" Version="1.0.0" PrivateAssets="all" />
+	</ItemGroup>
+
+
+
+
+	<PropertyGroup>
+		<PackageId> WasmAI.AutoGenerator.Patterns</PackageId>
+		<Version>1.0.2</Version>
+
+		<Authors>Anas Al-Tawil</Authors>
+
+		<Company>GitHub</Company>
+		<PackageDescription>
+
+			WasmAI.AutoGenerator.Patterns
+		</PackageDescription>
+		<RepositoryUrl>
+			https://github.com/asgmodel/WasmAI.AutoGenerator.git
+		</RepositoryUrl>
+
+		<!-- Optional Enhancements -->
+
+	</PropertyGroup>
+</Project>
