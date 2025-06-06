@@ -24,12 +24,14 @@
 
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="WasmAI.AutoGenerator.Coder" Version="1.0.3" />
-		<PackageReference Include="WasmAI.AutoGenerator.Patterns" Version="1.0.2" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="WasmAI.AutoGenerator.Coder" Version="1.0.4" />
+		<PackageReference Include="WasmAI.AutoGenerator.Patterns" Version="1.0.3" />
 	</ItemGroup>
 	<PropertyGroup>
 		<PackageId>WasmAI.AutoGenerator</PackageId>
-		<Version>1.1.0</Version>
+		<Version>1.1.1</Version>
 
 		<Authors>Anas Al-Tawil</Authors>
 

@@ -551,7 +551,48 @@ namespace AutoGenerator.Repositories.Base
             return Task.FromResult((int)base.CounItems);
         }
 
-        
+        public override async Task<T?> CreateAsync(T entity)
+        {
+            try
+            {
+                T item = (await DbSet.AddAsync(entity)).Entity;
+                await SaveAsync();
+                return item;
+            }
+            catch (RepositoryException exception)
+            {
+                _logger.LogError(exception, "Error creating entity");
+                throw exception;
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception, "Error creating entity");
+                throw new Exception("Error creating entity");
+            }
+        }
+        public async Task<bool> ExecuteTransactionAsync(Func<Task<bool>> operation)
+        {
+            return await base.ExecuteTransactionAsync(operation);
+        }
+
+        public new async Task<bool> ExistsAsync(object value, string name = "Id")
+        {
+            return await base.ExistsAsync(e => EF.Property<object>(e, name) == value);
+        }
+
+        public async Task<PagedResponse<T>> GetAllAsync(string[]? includes = null, int pageNumber = 1, int pageSize = 10)
+        {
+            var query = GetQueryable(includes, false);
+            return await query.ToPagedResponseAsync(pageNumber, pageSize);
+        }
+
+        public async Task<IEnumerable<T>> GetAllAsync(string propertyName, object value, string[]? includes = null)
+        {
+            var query = GetQueryable(includes, false);
+            query = query.Where(e => EF.Property<object>(e, propertyName) == value);
+            return await query.ToListAsync();
+            //return await base.GetAllAsync(e=>EF.Property<object>(e,propertyName)==value,s=>s.Include());
+        }
         public async Task<DataResult<IEnumerable<T>>> GetAllDataResultAsync()
         {
             try
@@ -598,7 +639,7 @@ namespace AutoGenerator.Repositories.Base
         {
             try
             {
-                var result = await base.CreateAsync(entity);
+                var result = await CreateAsync(entity);
                 return DataResult<T>.Ok(result);
             }
             catch (Exception ex)
@@ -848,7 +889,7 @@ namespace AutoGenerator.Repositories.Base
             var newen = new List<T>();
             foreach (var entity in entities) {
 
-                var nitem =await base.CreateAsync(entity);
+                var nitem =await CreateAsync(entity);
                 if (nitem != null)
                 {
                     newen.Add(nitem);
@@ -870,15 +911,7 @@ namespace AutoGenerator.Repositories.Base
             throw new NotImplementedException();
         }
 
-        public Task<bool> ExistsAsync(object value, string name = "Id")
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<PagedResponse<T>> GetAllAsync(string[]? includes = null, int pageNumber = 1, int pageSize = 10)
-        {
-            throw new NotImplementedException();
-        }
+  
 
         public Task<T?> GetByIdAsync(object id)
         {

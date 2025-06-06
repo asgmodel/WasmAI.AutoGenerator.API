@@ -4,9 +4,38 @@ using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System.Reflection;
 
 namespace AutoGenerator.Controllers.Base
 {
+    public static class ObjectPatchExtensions
+    {
+
+        public static void PatchProperties<TSource, TDestination>(this TSource source, TDestination destination)
+        {
+            if (source == null || destination == null)
+                return;
+
+            var sourceType = typeof(TSource);
+            var destType = typeof(TDestination);
+
+            foreach (var prop in sourceType.GetProperties(BindingFlags.Public | BindingFlags.Instance))
+            {
+                var sourceValue = prop.GetValue(source);
+
+                // نتجاهل القيم الفارغة
+                if (sourceValue == null)
+                    continue;
+
+                // نبحث عن خاصية مطابقة بالاسم ونوع متوافق في الكائن الهدف
+                var destProp = destType.GetProperty(prop.Name);
+                if (destProp != null && destProp.CanWrite && destProp.PropertyType.IsAssignableFrom(prop.PropertyType))
+                {
+                    destProp.SetValue(destination, sourceValue);
+                }
+            }
+        }
+    }
     public abstract class BaseBPRController<TRequest, TResponse, VMCreate, VMOutput, VMUpdate, VMInfo, VMDelete> : ControllerBase
        where TRequest : class
        where TResponse : class
@@ -87,12 +116,12 @@ namespace AutoGenerator.Controllers.Base
             return Ok(output);
         }
 
-        [HttpPut]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public virtual async Task<ActionResult<VMOutput>> UpdateAsync([FromBody] VMUpdate model)
+        [HttpPut("{id}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(ProblemDetails), 404)]
+        [ProducesResponseType(400)]
+        public virtual async Task<ActionResult<VMOutput>> UpdateAsync([FromRoute] string id, [FromBody] VMUpdate model)
         {
             if (!ModelState.IsValid)
             {
@@ -100,20 +129,39 @@ namespace AutoGenerator.Controllers.Base
                 return BadRequest("Invalid model");
             }
 
-            var request = _mapper.Map<TRequest>(model);
-            var result = await _bPR.UpdateDataResultAsync(request);
-
-            if (!result.Success || result.Data == null)
+            // جلب الكائن الأصلي القابل للتعديل من قاعدة البيانات
+            var existingResult = await _bPR.GetByIdAsync(id);
+            if (existingResult == null)
             {
-                _logger.LogWarning("Failed to update item: {Message}", result.Message);
-                return NotFound(new ProblemDetails { Title = "Update Failed", Detail = result.Message ?? "Item not found" });
+                _logger.LogWarning("Item with ID {Id} not found for update.", id);
+                return NotFound(new ProblemDetails
+                {
+                    Title = "Update Failed",
+                    Detail = "Item not found"
+                });
             }
 
-            var output = _mapper.Map<VMOutput>(result.Data);
+            // دمج القيم الجديدة مع الكائن الأصلي
+            model.PatchProperties(existingResult);
+
+            // تنفيذ التحديث
+            var updateResult = await _bPR.UpdateDataResultAsync(_mapper.Map<TRequest>(existingResult));
+            if (!updateResult.Success || updateResult.Data == null)
+            {
+                _logger.LogWarning("Failed to update item: {Message}", updateResult.Message);
+                return NotFound(new ProblemDetails
+                {
+                    Title = "Update Failed",
+                    Detail = updateResult.Message ?? "Item not found"
+                });
+            }
+
+            // تحويل الكائن النهائي إلى ViewModel للعرض
+            var output = _mapper.Map<TResponse>(updateResult.Data);
             return Ok(output);
         }
 
-        [HttpDelete("{id}")]
+            [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]

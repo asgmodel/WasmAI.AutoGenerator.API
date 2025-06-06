@@ -133,10 +133,10 @@ namespace AutoGenerator.ApiFolder
     {
       ""VM"": [],
       ""Dto"": {
-        ""Build"": [ ""Request"", ""Response"", ""ResponseFilter"" ],
-        ""Share"": [ ""Request"", ""Response"", ""ResponseFilter"" ]
+        ""Build"": [ ""Request"", ""Response""  ],
+        ""Share"": [ ""Request"", ""Response"" ]
       },
-      ""Dso"": [ ""Request"", ""Response"", ""ResponseFilter"" ]
+      ""Dso"": [ ""Request"", ""Response"" ]
     }
   ],
   ""Config"": [ ""Mappers"", ""Scopes"", ""Singletons"", ""Transients"" ],

@@ -16,7 +16,7 @@
 
 	<PropertyGroup>
 		<PackageId> WasmAI.AutoGenerator.Patterns</PackageId>
-		<Version>1.0.2</Version>
+		<Version>1.0.4</Version>
 
 		<Authors>Anas Al-Tawil</Authors>
 

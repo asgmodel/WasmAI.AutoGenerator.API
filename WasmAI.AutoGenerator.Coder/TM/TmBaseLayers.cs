@@ -18,8 +18,11 @@ public  class TmBaseLayers
         foreach (var (fileName, content) in files)
         {
             string fullPath = Path.Combine(baseDirectory, fileName);
-            File.WriteAllText(fullPath, content);
-            Console.WriteLine($"Created: {fullPath}");
+            if (!File.Exists(fullPath))
+            {
+                File.WriteAllText(fullPath, content);
+                Console.WriteLine($"Created: {fullPath}");
+            }
         }
     }
 
@@ -41,7 +44,7 @@ namespace {root}.BPR.Layers.Base
     }}
 
     public abstract class BaseBPRLayer<TRequest, TResponse, ERequest, EResponse, IT, IE> 
-        : TBPR<TRequest, TResponse, ERequest, EResponse, IT, IE>
+        : TBPR<TRequest, TResponse, ERequest, EResponse, IT, IE>,IBPRLayer<TRequest, TResponse>
         where TRequest : class
         where TResponse : class
         where ERequest : class

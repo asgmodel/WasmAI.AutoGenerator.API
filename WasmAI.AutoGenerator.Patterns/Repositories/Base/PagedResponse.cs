@@ -1,4 +1,11 @@
-﻿namespace AutoGenerator;
+﻿using AutoGenerator.Repositories.Base;
+using AutoMapper;
+using Microsoft.Extensions.Logging;
+using System.Linq.Expressions;
+using System.Reflection;
+
+namespace AutoGenerator;
+
 
 public abstract class PagedResponseBase
 {

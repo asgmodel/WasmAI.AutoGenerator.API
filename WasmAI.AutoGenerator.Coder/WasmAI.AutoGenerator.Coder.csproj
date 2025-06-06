@@ -28,14 +28,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	</ItemGroup>
-
-	<ItemGroup>
-		<PackageReference Include="WasmAI.AutoGenerator.Custom" Version="1.0.1" />
+		<PackageReference Include="WasmAI.AutoGenerator.Custom" Version="1.0.2" />
 	</ItemGroup>
 	<PropertyGroup>
 		<PackageId> WasmAI.AutoGenerator.Coder</PackageId>
-		<Version>1.0.3</Version>
+		<Version>1.0.4</Version>
 
 		<Authors>Anas Al-Tawil</Authors>
 

@@ -5,7 +5,9 @@ using AutoGenerator.ApiFolder;
 using AutoGenerator.Helper.Translation;
 using AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Identity.Client;
 using System.Reflection;
+using System.Security.Cryptography;
 using static System.Formats.Asn1.AsnWriter;
 
 namespace AutoGenerator.Config
@@ -116,34 +118,43 @@ namespace AutoGenerator.Config
             var attribute = type.GetCustomAttribute<IgnoreAutomateMapperAttribute>();
             return attribute != null && attribute.IgnoreMapping;
         }
-
+        public static  int CountMap { get; set; } = 0;
         public MappingConfig()
         {
             var assemblyModels = ApiFolderInfo.AssemblyModels;
             var assembly = ApiFolderInfo.AssemblyShare;
 
             var models = assemblyModels.GetTypes().Where(t => typeof(ITModel).IsAssignableFrom(t) && t.IsClass).ToList();
-            var dtos = assembly.GetTypes().Where(t => typeof(ITBuildDto).IsAssignableFrom(t) && t.IsClass).ToList();
-            var dtosShare = assembly.GetTypes().Where(t => typeof(ITShareDto).IsAssignableFrom(t) && t.IsClass).ToList();
+            var dtos = assembly.GetTypes().Where(t => typeof(ITBuildDto).IsAssignableFrom(t) && t.IsClass&&t.Name.Contains("BuildDto")).ToList();
+            var dtosShare = assembly.GetTypes().Where(t => typeof(ITShareDto).IsAssignableFrom(t) && t.IsClass&& t.Name.Contains("ShareDto")).ToList();
             var vms = assembly.GetTypes().Where(t => typeof(ITVM).IsAssignableFrom(t) && t.IsClass).ToList();
-            var dsos = assembly.GetTypes().Where(t => typeof(ITDso).IsAssignableFrom(t) && t.IsClass).ToList();
+            var dsos = assembly.GetTypes().Where(t => typeof(ITDso).IsAssignableFrom(t) && t.IsClass&& t.Name.Contains("Dso")).ToList();
 
             // 1. Map Models <-> DTOs
+            int c = 0;
             foreach (var model in models.Where(m => !CheckIgnoreAutomateMapper(m)))
             {
-                foreach (var dto in dtos.Where(d => d.Name.Contains(model.Name, StringComparison.OrdinalIgnoreCase)))
+
+                var sh = dtosShare.Where(s => s.Name.Contains(model.Name));
+                var ds = dsos.Where(d => d.Name.Contains(model.Name));
+
+                foreach (var dto in dtos.Where(d => d.Name.Contains(model.Name)))
                 {
                     AddTwoWayMap(model, dto);
 
+                   
                     if (!CheckIgnoreAutomateMapper(dto))
                     {
-                        foreach (var share in dtosShare.Where(s => s.Name.Contains(model.Name, StringComparison.OrdinalIgnoreCase)))
+                        foreach (var share in sh)
                         {
                             CreateMap(dto, share);
+                            CountMap++;
 
-                            foreach (var dso in dsos.Where(d => d.Name.Contains(model.Name, StringComparison.OrdinalIgnoreCase)))
+                            foreach (var dso in ds)
                             {
                                 CreateMap(share, dso);
+                                CountMap++;
+                                c++;
                             }
                         }
                     }
@@ -153,8 +164,12 @@ namespace AutoGenerator.Config
             // 2. Map DSO <-> VM
             foreach (var dso in dsos.Where(d => !CheckIgnoreAutomateMapper(d)))
             {
-                foreach (var vm in vms.Where(v => !CheckIgnoreAutomateMapper(v)))
+
+                var name = models.Where(m => dso.Name.Contains(m.Name, StringComparison.OrdinalIgnoreCase)).FirstOrDefault()?.Name;
+                foreach (var vm in vms.Where(v => !CheckIgnoreAutomateMapper(v) && v.Name.Contains(name, StringComparison.OrdinalIgnoreCase)))
                 {
+
+
                     AddTwoWayMap(dso, vm);
 
 
@@ -172,7 +187,10 @@ namespace AutoGenerator.Config
             // 3. Map DTO <-> VM
             foreach (var dto in dtos.Where(d => !CheckIgnoreAutomateMapper(d)))
             {
-                foreach (var vm in vms.Where(v => !CheckIgnoreAutomateMapper(v)))
+
+                var name = models.Where(m => dto.Name.Contains(m.Name, StringComparison.OrdinalIgnoreCase)).FirstOrDefault()?.Name;
+
+                foreach (var vm in vms.Where(v => !CheckIgnoreAutomateMapper(v) && v.Name.Contains(name, StringComparison.OrdinalIgnoreCase)))
                 {
                     AddTwoWayMap(dto, vm);
                 }
@@ -181,13 +199,14 @@ namespace AutoGenerator.Config
             // 4. Map Share <-> VM
             foreach (var share in dtosShare.Where(s => !CheckIgnoreAutomateMapper(s)))
             {
-                foreach (var vm in vms.Where(v => !CheckIgnoreAutomateMapper(v)))
+                var name = models.Where(m => share.Name.Contains(m.Name, StringComparison.OrdinalIgnoreCase)).FirstOrDefault()?.Name;
+                foreach (var vm in vms.Where(v => !CheckIgnoreAutomateMapper(v) && v.Name.Contains(name, StringComparison.OrdinalIgnoreCase)))
                 {
                     AddTwoWayMap(share, vm);
                 }
             }
         }
-        private  void  MapRepToReq(string tag,List<Type> types,string tagreq= "Request", string tagrep= "Response")
+        private void MapRepToReq(string tag, List<Type> types, string tagreq = "Request", string tagrep = "Response")
         {
 
 
@@ -195,8 +214,12 @@ namespace AutoGenerator.Config
             {
 
                 var typerep = types.Where(d => d.Name.Contains($"{tagrep}{tag}") && d.Name.Contains(typereq.Name.Replace($"{tagreq}{tag}", ""))).FirstOrDefault();
-                if(typerep!=null)
+                if (typerep != null)
+                {
                     CreateMap(typerep, typereq);
+                    CountMap++;
+
+                }
 
 
 
@@ -209,6 +232,7 @@ namespace AutoGenerator.Config
                 HelperTranslation.MapToProcessAfter(src, dest, context);
             });
 
+            CountMap+=2;
             CreateMap(destination, source).AfterMap((src, dest, context) =>
             {
                 HelperTranslation.MapToProcessAfter(src, dest, context);

@@ -7,19 +7,13 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-
-
 	</ItemGroup>
 
 	<ItemGroup>
-	</ItemGroup>
-
-	<ItemGroup>
-		<PackageReference Include="WasmAI.AutoGenerator.Config" Version="1.0.1" />
-	</ItemGroup>
+		<PackageReference Include="WasmAI.AutoGenerator.Config" Version="1.0.2" />	</ItemGroup>
 	<PropertyGroup>
 		<PackageId> WasmAI.AutoGenerator.Custom</PackageId>
-		<Version>1.0.1</Version>
+		<Version>1.0.2</Version>
 
 		<Authors>Anas Al-Tawil</Authors>
 
