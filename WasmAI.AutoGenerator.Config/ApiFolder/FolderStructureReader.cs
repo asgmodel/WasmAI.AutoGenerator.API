@@ -124,7 +124,7 @@ namespace AutoGenerator.ApiFolder
         private dynamic? folderStructure;
 
 
-        private static string TMFolderStructure = @"
+        public static string TMFolderStructure = @"
 {
   ""Controllers"": [ ""Api"", ""Auth"", ""Admin"" ],
   ""Repositories"": [ ""Base"", ""Builder"", ""Share"" ],

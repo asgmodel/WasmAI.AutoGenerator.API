@@ -1,4 +1,5 @@
 ﻿using AutoGenerator.ApiFolder;
+using AutoGenerator.Code.Config;
 using AutoGenerator.Helper.Translation;
 using AutoGenerator.TM;
 using Microsoft.CodeAnalysis;
@@ -29,6 +30,16 @@ public class ControllerGenerator : BaseGenerator, ITGenerator
         base.SaveToFile(filePath);
     }
 
+    static (string,string) getNamespacebprlayer()
+    {
+        if (BPRLAYERGENERATOR.GenType == BPRLayerGenType.Dso)
+            return ("Services.Services","Dso");
+        else if (BPRLAYERGENERATOR.GenType == BPRLayerGenType.ShareDto)
+            return ("Repositories.Share","Dto.Share");
+        else 
+            return ("Repositories.Builder", "Dto.Build");
+
+    }
 
     public static void GenerateAll( string type, string subtype, string NamespaceName, string pathfile)
     {
@@ -46,6 +57,8 @@ public class ControllerGenerator : BaseGenerator, ITGenerator
         var root = ApiFolderInfo.ROOT.Name;
 
         NamespaceName = $"{root}.Controllers.{subtype}";
+        var  (rs1,rs2) = getNamespacebprlayer();
+        var namespacebprlayer = $"{root}.{rs1}";
 
         foreach (var model in models)
         {
@@ -62,12 +75,12 @@ public class ControllerGenerator : BaseGenerator, ITGenerator
                             "Microsoft.Extensions.Logging",
                             "System.Collections.Generic",
 
-                            $"{root}.Services.Services",
+                            namespacebprlayer,
                             "Microsoft.AspNetCore.Mvc",
                             $"{root}.DyModels.VMs",
                             "System.Linq.Expressions",
-                             $"{root}.DyModels.Dso.Requests",
-                            $"{root}.DyModels.Dso.Responses",
+                             $"{root}.DyModels.{rs2}.Requests",
+                            $"{root}.DyModels.{rs2}.Responses",
                             "AutoGenerator.Helper.Translation"
 
 

@@ -212,26 +212,83 @@ builder.Services
 
 ---
 
-## ⚠️ Notes
 
-- 🔒 **Secure Credentials**: Store SMTP passwords and sensitive data in environment variables or a secrets vault.
-- 📂 **Dynamic Architecture**: Automatically generates structure, services, schedulers, and validators from the config file.
-- 📧 **Built-in Notifier**: Easily enable Email/SMS/Push notifications for your app.
-
----
-
-## ✅ Conclusion
-
-**WasmAI.AutoGenerator** supercharges your .NET development by reducing boilerplate and enforcing clean, modular architecture. Whether you're building an admin panel, a complex API, or a service-oriented backend—this tool lets you build your project architecture in seconds with:
+## 🚀 Command Line Generation Options
 
 ```bash
 dotnet run generate
 ```
 ```bash
-dotnet run generate  /bpr
+# Basic Generation
+dotnet run generate                   # Standard generation
+dotnet run generate /m               # With Model Generator
+dotnet run generate /m/ai            # AI-Assisted generation
+
+# 🏢 BPR ENTERPRISE PATTERNS
+dotnet run generate /bpr c:dso       # Domain Service Objects
+dotnet run generate /bpr c:share     # Shared DTO Pattern  
+dotnet run generate /bpr c:build     # Builder Pattern
+dotnet run generate /bpr c:all       # Complete Enterprise Stack
+
+# 🔄 COMBINED WORKFLOWS
+dotnet run generate /bpr c:dso /m    # DSO + Model Generator
+dotnet run generate /bpr c:all /m/ai # Complete AI-Assisted
+
+# 🔐 AUTHENTICATION COMMANDS
+dotnet run generate /bpr e:auth      # Add authentication files (skip if exists)
+dotnet run generate /bpr e:nauth     # Force create new auth files
+
+# 💳 PAYMENT INTEGRATION COMMANDS
+dotnet run generate /bpr e:payment   # Add payment provider infrastructure
+dotnet run generate /bpr e:payment stripe   # Add Stripe payment integration
+dotnet run generate /bpr e:payment paypal   # Add PayPal payment integration
+dotnet run generate /bpr e:payment all     # Add all payment providers
+
+# 🎯 COMBINED AUTH & PAYMENT
+dotnet run generate /bpr e:auth e:payment  # Auth + Payment infrastructure
+dotnet run generate /bpr c:all e:auth e:payment /m/ai  # Complete stack with AI
+```
+## 🏁 Getting Started Example
+## Updated Program.cs Implementation
+```csharp
+using System.Diagnostics;
+using System.Reflection;
+using AutoGenerator;
+using AutoGenerator.Config;
+using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using WasmAI.AutoGenerator.Auth;
+using WasmAI.PaymentProvider.Data;
+using WasmAI.PaymentProvider.Models;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+
+// ✅ Enhanced Main Service Registration
+builder.Services
+    .AddWasmAutoGeneratorApi<PaymentDbContext, ApplicationUser>(new()
+    {
+        Arags = args,
+        NameRootApi = "v1",
+        Assembly = Assembly.GetExecutingAssembly(),
+        DbConnectionString = builder.Configuration.GetConnectionString("DefaultConnection"),
+    });
+
+var app = builder.Build();
+
+// ✅ Enhanced Middleware Registration
+app.UseWasmAutoGeneratorApi();
+
+app.UseHttpsRedirection();
+app.MapControllers();
+app.Run();
 ```
 
-Start building smarter. 💡
+## ✅ Conclusion
+
+**WasmAI.AutoGenerator** supercharges your .NET development by reducing boilerplate and enforcing clean, modular architecture. Whether you're building an admin panel, a complex API, or a service-oriented backend—this tool lets you build your project architecture in seconds with:
 
 --- 
 

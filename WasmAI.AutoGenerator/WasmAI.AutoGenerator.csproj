@@ -10,6 +10,7 @@
 		<None Include="README.md" Pack="true" PackagePath="" />
 	</ItemGroup>
 	<ItemGroup>
+		<PackageReference Include="WasmAI.AutoGenerator.Coder" Version="1.0.5" />
 		<PackageReference Include="WasmAI.AutoNotificationService" Version="1.0.0" />
 		<PackageReference Include="Quartz" Version="3.14.0" />
 		<PackageReference Include="Quartz.AspNetCore" Version="3.14.0" />
@@ -20,18 +21,21 @@
 
 		<PackageReference Include="WasmAI.ConditionChecker" Version="1.0.1" />
 
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+		<PackageReference Include="NSwag.AspNetCore" Version="14.3.0" />
+
 
 
 	</ItemGroup>
 	<ItemGroup>
-	</ItemGroup>
-	<ItemGroup>
-		<PackageReference Include="WasmAI.AutoGenerator.Coder" Version="1.0.4" />
 		<PackageReference Include="WasmAI.AutoGenerator.Patterns" Version="1.0.3" />
 	</ItemGroup>
+	
+	
 	<PropertyGroup>
-		<PackageId>WasmAI.AutoGenerator</PackageId>
-		<Version>1.1.1</Version>
+		<PackageId>WasmAI.AutoGenerator.API</PackageId>
+		<Version>1.0.0-b</Version>
 
 		<Authors>Anas Al-Tawil</Authors>
 

@@ -1,5 +1,5 @@
 ﻿using AutoGenerator;
-using AutoGenerator.Config;
+using AutoGenerator.Repositories.Base;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
@@ -9,25 +9,40 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace WasmAI.PaymentProvider.Models
 {
 
-       public class ApplicationUser : IdentityUser, ITModel
+    public class ApplicationUser : IdentityUser, ITModel
     {
 
     }
-    public class ProviderPayment: ITModel
+
+
+
+
+
+
+
+
+
+
+
+
+    public class ProviderPayment : ITModel
     {
-        public string Id { get; set; } 
+        public string? Id { get; set; } = $"{Guid.NewGuid():N}";
         [Required]
         [MaxLength(100)]
         public string Name { get; set; }
         public string? Description { get; set; }
 
         public List<Product> Products { get; set; } = new();
+
+
+
     }
-    public class CheckoutSession: ITModel 
+    public class CheckoutSession : ITModel
     {
         [Key]
         [MaxLength(100)]
-        public string Id { get; set; }   // المفتاح الأساسي للجلسة داخل نظامك كـ نص
+        public string Id { get; set; } = Guid.NewGuid().ToString(); // المفتاح الأساسي للجلسة داخل نظامك كـ نص
 
         [Required]
         [MaxLength(200)]
@@ -38,7 +53,7 @@ namespace WasmAI.PaymentProvider.Models
         public string ProviderName { get; set; } // اسم المزود (Stripe, PayPal)
 
         // FK للعميل الذي بدأ الجلسة
-        public string  CustomerId { get; set; }
+        public string CustomerId { get; set; }
         public Customer Customer { get; set; } = default!;
 
         [Required]
@@ -66,15 +81,15 @@ namespace WasmAI.PaymentProvider.Models
         public DateTime? ExpiresAt { get; set; }
         public DateTime? CompletedAt { get; set; }
 
-       
+
 
         // يمكن إضافة Metadata
         // public string? Metadata { get; set; }
     }
 
-    public class Product: ITModel
+    public class Product : ITModel
     {
-        public string Id { get; set; } 
+        public string? Id { get; set; } = $"{Guid.NewGuid():N}";
 
         [Required]
         [MaxLength(200)]
@@ -83,15 +98,15 @@ namespace WasmAI.PaymentProvider.Models
         public bool IsActive { get; set; } = true;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        public string  ProviderId { get; set; }
+        public string ProviderId { get; set; }
         public ProviderPayment Provider { get; set; } = default!;
 
         public List<PricePlan> PricePlans { get; set; } = new();
     }
 
-    public class PricePlan: ITModel
+    public class PricePlan : ITModel
     {
-        public string Id { get; set; } 
+        public string? Id { get; set; } = $"{Guid.NewGuid():N}";
         [Required]
         [MaxLength(200)]
         public string ExternalId { get; set; }
@@ -114,13 +129,15 @@ namespace WasmAI.PaymentProvider.Models
         public bool IsActive { get; set; } = true;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        public string  ProductId { get; set; }
+        public string ProductId { get; set; }
+
         public Product Product { get; set; } = default!;
     }
 
-    public class Customer: ITModel
+    public class Customer : ITModel
     {
-        public string Id { get; set; } 
+        public string? Id { get; set; } = $"{Guid.NewGuid():N}";
+        [Required]
         [MaxLength(200)]
         public string ExternalId { get; set; }
 
@@ -142,9 +159,9 @@ namespace WasmAI.PaymentProvider.Models
 
     }
 
-    public class PaymentMethod: ITModel
+    public class PaymentMethod : ITModel
     {
-        public string Id { get; set; }
+        public string? Id { get; set; } = $"{Guid.NewGuid():N}";
         [Required]
         [MaxLength(200)]
         public string ExternalId { get; set; }
@@ -159,18 +176,20 @@ namespace WasmAI.PaymentProvider.Models
         public bool IsDefault { get; set; } = false;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        public string  CustomerId { get; set; }
+        public string CustomerId { get; set; }
         public Customer Customer { get; set; } = default!;
     }
 
-    public class Payment: ITModel
+    public class Payment : ITModel
     {
-        public string Id { get; set; }
+        public string? Id { get; set; } = $"{Guid.NewGuid():N}";
         [Required]
         [MaxLength(200)]
         public string ExternalId { get; set; }
 
-        public string  CustomerId { get; set; }
+        public string CustomerId { get; set; }
+
+
         public Customer Customer { get; set; } = default!;
 
         public decimal Amount { get; set; }
@@ -190,13 +209,16 @@ namespace WasmAI.PaymentProvider.Models
         public List<Refund> Refunds { get; set; } = new();
     }
 
-    public class Refund: ITModel
+    public class Refund : ITModel
     {
-        public string Id { get; set; }
+
+
+        public string? Id { get; set; } = $"{Guid.NewGuid():N}";
+        [Required]
         [MaxLength(200)]
         public string ExternalId { get; set; }
 
-        public string  PaymentId { get; set; }
+        public string PaymentId { get; set; }
         public Payment Payment { get; set; } = default!;
 
         public decimal Amount { get; set; }
@@ -212,14 +234,14 @@ namespace WasmAI.PaymentProvider.Models
         public DateTime? ProcessedAt { get; set; }
     }
 
-    public class Invoice: ITModel
+    public class Invoice : ITModel
     {
-        public string Id { get; set; } 
+        public string? Id { get; set; } = $"{Guid.NewGuid():N}";
         [Required]
         [MaxLength(200)]
-        public string ExternalId { get; set; }
+        public string ExternalId { get; set; } = $"{Guid.NewGuid():N}";
 
-        public string  CustomerId { get; set; }
+        public string CustomerId { get; set; }
         public Customer Customer { get; set; } = default!;
 
         [Required]
@@ -240,9 +262,9 @@ namespace WasmAI.PaymentProvider.Models
         public List<InvoiceItem> Items { get; set; } = new();
     }
 
-    public class InvoiceItem: ITModel
+    public class InvoiceItem : ITModel
     {
-        public string Id { get; set; }
+        public string? Id { get; set; } = $"{Guid.NewGuid():N}";
         [Required]
         [MaxLength(500)]
         public string Description { get; set; }
@@ -250,18 +272,18 @@ namespace WasmAI.PaymentProvider.Models
         public int Quantity { get; set; } = 1;
         public decimal Total { get; set; }
 
-        public string  InvoiceId { get; set; }
+        public string InvoiceId { get; set; }
         public Invoice Invoice { get; set; } = default!;
     }
 
-    public class Subscription: ITModel
+    public class Subscription : ITModel
     {
-        public string Id { get; set; }
+        public string? Id { get; set; } = $"{Guid.NewGuid():N}";
         [Required]
         [MaxLength(200)]
         public string ExternalId { get; set; }
 
-        public string  CustomerId { get; set; }
+        public string CustomerId { get; set; }
         public Customer Customer { get; set; } = default!;
 
         [Required]
@@ -280,14 +302,14 @@ namespace WasmAI.PaymentProvider.Models
         public List<SubscriptionItem> Items { get; set; } = new();
     }
 
-    public class SubscriptionItem: ITModel
+    public class SubscriptionItem : ITModel
     {
-        public string Id { get; set; } 
+        public string? Id { get; set; } = $"{Guid.NewGuid():N}";
         [Required]
         [MaxLength(200)]
         public string ExternalId { get; set; }
 
-        public string  SubscriptionId { get; set; }
+        public string SubscriptionId { get; set; }
         public Subscription Subscription { get; set; } = default!;
 
         [Required]
@@ -298,10 +320,9 @@ namespace WasmAI.PaymentProvider.Models
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 
-    [SchedulerEnabled(true)]
-    public class Discount: ITModel
+    public class Discount : ITModel
     {
-        public string Id { get; set; }
+        public string? Id { get; set; } = $"{Guid.NewGuid():N}";
         [Required]
         [MaxLength(100)]
         public string CouponCode { get; set; }
@@ -320,13 +341,15 @@ namespace WasmAI.PaymentProvider.Models
         public bool IsActive { get; set; } = true;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        public string ? CustomerId { get; set; }
+        public string? CustomerId { get; set; }
+
+
         public Customer? Customer { get; set; }
     }
 
-    public class WebhookEvent: ITModel
+    public class WebhookEvent : ITModel
     {
-        public string Id { get; set; }
+        public string? Id { get; set; } = $"{Guid.NewGuid():N}";
         [Required]
         [MaxLength(200)]
         public string EventId { get; set; }
@@ -338,6 +361,8 @@ namespace WasmAI.PaymentProvider.Models
         [Required]
         [MaxLength(100)]
         public string ProviderName { get; set; }
+
+
         public DateTime ReceivedAt { get; set; } = DateTime.UtcNow;
         public bool Processed { get; set; } = false;
         public DateTime? ProcessedAt { get; set; }
@@ -345,9 +370,9 @@ namespace WasmAI.PaymentProvider.Models
         public string? ProcessingError { get; set; }
     }
 
-    public class ActivityLog: ITModel
+    public class ActivityLog : ITModel
     {
-        public string Id { get; set; }
+        public string? Id { get; set; } = $"{Guid.NewGuid():N}";
         [Required]
         [MaxLength(100)]
         public string EntityName { get; set; }

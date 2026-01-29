@@ -1,6 +1,8 @@
 ﻿
 
 
+using System.Reflection;
+using System.Threading.Tasks;
 using AutoGenerator.ApiFolder;
 using AutoGenerator.Code.Config;
 using AutoGenerator.Code.Services;
@@ -13,10 +15,10 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using System.Reflection;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using Wasm.AutoGenerator.Config;
 using Wasm.AutoGenerator.ConfigApi;
+using WasmAI.AutoGenerator.Auth;
 
 namespace AutoGenerator
 {
@@ -39,9 +41,9 @@ namespace AutoGenerator
         public string[]? Arags { get; set; }
 
 
-        public string? ProjectId { get; set; } 
+        public string? ProjectId { get; set; }
 
-
+        public bool IsAutoAuth { get; set; } = true;
         public string? PathModels { get; set; } = "";
 
         public string? PathDataContext { get; set; } = "";
@@ -61,7 +63,7 @@ namespace AutoGenerator
 
         public string NameRootApi { get; set; } = "Api";
 
-        //public bool  IsAutoBuild { get; set; } = true;
+        public bool  IsAutoAuth { get; set; } = true;
         public bool IsMapper { get; set; } = true;
 
         public Type? TypeContext { get; set; }
@@ -70,6 +72,8 @@ namespace AutoGenerator
         public Assembly? AssemblyModels { get; set; }
 
         public string? DbConnectionString { get; set; }
+
+        public string? DbConnectionStringCode { get; set; }
         public string[]? Arags { get; set; }
 
         public string? PathModels { get; set; }= "";
@@ -83,14 +87,31 @@ namespace AutoGenerator
     public static class ConfigAddAutoBuilderApiCore
     {
         private static AutoBuilderApiCoreOption CoreOption=new AutoBuilderApiCoreOption();
+
+        public static IServiceCollection AddWasmAutoGeneratorApi<TContext, TUser>(
+           this IServiceCollection serviceCollection,
+           AutoBuilderApiCoreOption option)
+            where TContext : DbContext
+            where TUser : class
+        {
+            if (option.IsAutoAuth && File.Exists(AutoAuthConfig.PathToAutoauthapisettings))
+                serviceCollection.AddAutoAuthWasm();
+            return serviceCollection.AddAutoBuilderApiCore<TContext, TUser>(option);
+        }
+
         public static IServiceCollection AddAutoBuilderApiCore<TContext, TUser>(
            this IServiceCollection serviceCollection,
            AutoBuilderApiCoreOption option)
-            where TContext : class
+            where TContext : DbContext
             where TUser : class
 
         {
 
+            if(option == null)
+                throw new ArgumentNullException(nameof(option));
+
+            if(option.DbConnectionString != null)
+                serviceCollection.AddAutoDbContext<TContext, TUser>(option.DbConnectionString);
 
             var options = new AutoBuilderCoreOption()
             {
@@ -115,11 +136,11 @@ namespace AutoGenerator
                 }
             };
 
-
+            //AutoAuthConfig.PathToAutoauthapisettings  = System.IO.Path.Combine(AppContext.BaseDirectory.Split("bin")[0], "autoauthapisettings.json");
             options.Arags=cmdargs(option.Arags);
             InMemoryCodeRepository.PathModels = option.PathModels ?? "";
             CoreOption = option;
-
+           
             return serviceCollection.AddAutoBuilderCore<TContext, TUser>(options);
         }
          
@@ -129,13 +150,24 @@ namespace AutoGenerator
         {
             var art = arrgs.ToList();
 
+
             if (arrgs != null && arrgs.Length > 0)
             {
                 if (arrgs[0]== "generate" &&arrgs.Length>1)
                 {
+                    if (arrgs.Contains("e:auth"))
+                    {
+                        if (!File.Exists(AutoAuthConfig.PathToAutoauthapisettings))
+                            CreateConfigFile.GenerateBothConfigs();
+                        art.Remove("e:auth");
+                    }
+                    else if (arrgs.Contains("e:nauth"))
+                    {
+                        CreateConfigFile.GenerateBothConfigs();
+                        art.Remove("e:nauth");
+                    }
 
-
-                    if (arrgs[1] == "/m")
+                        if (arrgs[1] == "/m")
                     {
                        BaseGenerator.UseMG = true;
                         art.Remove("/m");
@@ -152,8 +184,41 @@ namespace AutoGenerator
 
                      
                         art.Remove("/bpr");
+                        ApiFolderInfo.IsBPR = true;
+                        if (arrgs.Length > 2)
+                        {
+                            if (arrgs.Contains("c:share"))
+                            {
+                                BPRLAYERGENERATOR.SetGenType(BPRLayerGenType.ShareDto);
+                                art.Remove("c:share");
+                            }
+                            else if (arrgs.Contains("c:dso"))
+                            {
+                                BPRLAYERGENERATOR.SetGenType(BPRLayerGenType.Dso);
+                                art.Remove("c:dso");
+                            }
+                            else if (arrgs.Contains("c:build"))
+                            {
+                                BPRLAYERGENERATOR.SetGenType(BPRLayerGenType.BuildDto);
+                                art.Remove("c:build");
+                            }
+                            else if (arrgs.Contains("c:all"))
+                            {
+                                BPRLAYERGENERATOR.GenType=BPRLayerGenType.Dso;
+                                art.Remove("c:all");
+                            }
+                            else
+                            {
+                                BPRLAYERGENERATOR.SetGenType(BPRLayerGenType.BuildDto);
+                            }
 
-                        ApiFolderInfo.IsBPR=true;
+
+                        }
+                        else
+                        {
+
+                        }
+                       
                     }
                     
                 }
@@ -181,12 +246,15 @@ namespace AutoGenerator
             return art.ToArray();
         }
 
-
-        public static WebApplication UseWasmAutoGenerator(this WebApplication app, AutoGeneratorCustomApiOptions? options = null, bool isLocal = true)
+         
+        public static WebApplication UseWasmAutoGeneratorApi(this WebApplication app, AutoGeneratorCustomApiOptions? options = null)
 
         {
+            if (options == null)
+                options= new AutoGeneratorCustomApiOptions();
 
-
+            if (options.IsAutoAuth&&File.Exists(AutoAuthConfig.PathToAutoauthapisettings))
+                app.UseAutoAuthWasm();
 
             return app;
 
@@ -194,7 +262,7 @@ namespace AutoGenerator
 
 
 
-        public static  async Task<WebApplication> UseAutoGeneratorCustomLocalApi(this WebApplication app, AutoGeneratorCustomApiOptions? options=null)
+        private static  async Task<WebApplication> UseAutoGeneratorCustomLocalApi(this WebApplication app, AutoGeneratorCustomApiOptions? options=null)
         {
 
 
@@ -227,7 +295,7 @@ namespace AutoGenerator
             services.AddIdentity<TUser, IdentityRole<string>>().AddEntityFrameworkStores<TContext>().AddDefaultTokenProviders();
             return services;
         }
-        public static IServiceCollection AddAutoGeneratorCodeCustomApi(this IServiceCollection serviceCollection, AutoGeneratorCustomApiOptions? options = null)
+        private static IServiceCollection AddAutoGeneratorCodeCustomApi(this IServiceCollection serviceCollection, AutoGeneratorCustomApiOptions? options = null)
         {
             if (options == null)
                 throw new ArgumentNullException(nameof(options), "Options cannot be null.");
@@ -247,7 +315,7 @@ namespace AutoGenerator
 
             return serviceCollection;
         }
-        public static  WebApplication UseAutoGeneratorCustomApi(this WebApplication app, AutoGeneratorCustomApiOptions? options = null,bool isLocal=true)
+        private static  WebApplication UseAutoGeneratorCustomApi(this WebApplication app, AutoGeneratorCustomApiOptions? options = null,bool isLocal=true)
         {
 
             if (options == null)

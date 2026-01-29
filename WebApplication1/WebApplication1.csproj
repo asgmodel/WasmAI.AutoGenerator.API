@@ -4,6 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>cf3be91e-9a1c-42b6-af9c-71b7cba2e138</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -11,11 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-
-  </ItemGroup>
-
-  <ItemGroup>
-	  <PackageReference Include="WasmAI.AutoGenerator" Version="1.1.1" />
+    <ProjectReference Include="..\WasmAI.AutoGenerator\WasmAI.AutoGenerator.csproj" />
   </ItemGroup>
 
 </Project>

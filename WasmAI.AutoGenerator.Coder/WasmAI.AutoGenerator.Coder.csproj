@@ -17,6 +17,9 @@
 
 
 		</PackageReference>
+
+
+		<PackageReference Include="WasmAI.AutoGenerator.Custom" Version="1.0.3" />
 		<PackageReference Include="WasmAI.ConditionChecker" Version="1.0.1" />
 		<PackageReference Include="Google_GenerativeAI" Version="2.5.9" />
 	</ItemGroup>
@@ -26,13 +29,9 @@
 	<ItemGroup>
 		<Folder Include="TMRole\" />
 	</ItemGroup>
-
-	<ItemGroup>
-		<PackageReference Include="WasmAI.AutoGenerator.Custom" Version="1.0.2" />
-	</ItemGroup>
 	<PropertyGroup>
 		<PackageId> WasmAI.AutoGenerator.Coder</PackageId>
-		<Version>1.0.4</Version>
+		<Version>1.0.5</Version>
 
 		<Authors>Anas Al-Tawil</Authors>
 

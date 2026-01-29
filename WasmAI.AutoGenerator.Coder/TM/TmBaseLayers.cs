@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using AutoGenerator.ApiFolder;
+using AutoGenerator.Code.Config;
 
 namespace AutoGenerator.TM;
 public  class TmBaseLayers
@@ -128,12 +129,29 @@ namespace {root}.BPR.Layers.Base
 }}";
     }
 
+     static string getnameLayer()
+    {
+        if(BPRLAYERGENERATOR.GenType==BPRLayerGenType.Dso)
+               return "IBaseBPRServiceLayer";
+        if(BPRLAYERGENERATOR.GenType==BPRLayerGenType.ShareDto)
+                return "IBaseBPRShareLayer";
+       
+        
+        
+        
+        return "IBPRLayer";
+
+
+    }
     private static string GetControllerBPRFile(string root)
     {
+        var nameLayer = getnameLayer();
+
         return $@"
 using AutoGenerator;
 using AutoGenerator.Controllers.Base;
 using AutoGenerator.Repositories.Base;
+using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
 using Microsoft.Extensions.Logging;
 
@@ -149,11 +167,39 @@ namespace {root}.BPR.Layers.Base
         where VMInfo : class
         where VMDelete : class
     {{
-        protected IBaseBPRServiceLayer<TRequest, TResponse> _bpr;
-        protected BaseBPRControllerLayer(IMapper mapper, ILoggerFactory logger, IBaseBPRServiceLayer<TRequest, TResponse> bPR) 
+        protected {nameLayer}<TRequest, TResponse> _bpr;
+        protected BaseBPRControllerLayer(IMapper mapper, ILoggerFactory logger, {nameLayer}<TRequest, TResponse> bPR) 
             : base(mapper, logger, bPR)
         {{
             _bpr = bPR;
+        }}
+
+       [HttpGet( ""GetAll"")]
+       public override  Task<ActionResult<IEnumerable<VMOutput>>> GetAllAsync()
+        {{
+            return base.GetAllAsync();
+        }}
+
+       [HttpDelete(""Delete/{{id}}"")]
+       public override Task<ActionResult<bool>> DeleteAsync(string id){{
+          return base.DeleteAsync(id);
+        }}
+       [HttpPut(""Update/{{id}}"")]
+       public override  Task<ActionResult<VMOutput>> UpdateAsync([FromRoute] string id, [FromBody] VMUpdate model)
+        {{
+            return base.UpdateAsync(id, model);
+        }} 
+
+       [HttpPost(""Create"")]
+       public override Task<ActionResult<VMOutput>> CreateAsync([FromBody] VMCreate model)
+        {{
+            return base.CreateAsync(model);
+        }}
+
+        [HttpGet(""Get/{{id}}"")]
+        public override Task<ActionResult<VMInfo>> GetByIdAsync(string id)
+        {{
+            return base.GetByIdAsync(id);
         }}
     }}
 
@@ -170,11 +216,39 @@ namespace {root}.BPR.Layers.Base
         where VMDelete : class
         where VMFilter : class
     {{
-        protected IBaseBPRServiceLayer<TRequest, TResponse> _bpr;
-        protected BaseBPRControllerLayer(IMapper mapper, ILoggerFactory logger, IBaseBPRServiceLayer<TRequest, TResponse> bPR) 
+        protected {nameLayer}<TRequest, TResponse> _bpr;
+        protected BaseBPRControllerLayer(IMapper mapper, ILoggerFactory logger, {nameLayer}<TRequest, TResponse> bPR) 
             : base(mapper, logger, bPR)
         {{
             _bpr = bPR;
+        }}
+
+              [HttpGet( ""GetAll"")]
+       public override  Task<ActionResult<IEnumerable<VMOutput>>> GetAllAsync()
+        {{
+            return base.GetAllAsync();
+        }}
+
+       [HttpDelete(""Delete/{{id}}"")]
+       public override Task<ActionResult<bool>> DeleteAsync(string id){{
+          return base.DeleteAsync(id);
+        }}
+       [HttpPut(""Update/{{id}}"")]
+       public override  Task<ActionResult<VMOutput>> UpdateAsync([FromRoute] string id, [FromBody] VMUpdate model)
+        {{
+            return base.UpdateAsync(id, model);
+        }} 
+
+       [HttpPost(""Create"")]
+       public override Task<ActionResult<VMOutput>> CreateAsync([FromBody] VMCreate model)
+        {{
+            return base.CreateAsync(model);
+        }}
+
+        [HttpGet(""Get/{{id}}"")]
+        public override Task<ActionResult<VMInfo>> GetByIdAsync(string id)
+        {{
+            return base.GetByIdAsync(id);
         }}
     }}
 }}";

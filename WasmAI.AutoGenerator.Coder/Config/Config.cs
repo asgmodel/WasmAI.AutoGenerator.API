@@ -9,11 +9,110 @@ using System.Reflection;
 
 namespace AutoGenerator.Code.Config
 {
+    
 
+
+   
+
+    public  enum BPRLayerGenType
+    {
+         
+        BuildDto,
+        ShareDto ,
+        Dso ,
+        All
+       
+    }
+    public  class BPRLAYERGENERATOR
+    {
+        public  static  BPRLayerGenType  GenType { get; set; } = BPRLayerGenType.Dso;
+
+        public  static  bool IsGenerateBuilderDto { get; set; } = false;
+
+        public static bool IsGenerateShareDto { get; set; } = false;
+
+        public static bool IsGenerateDso { get; set; } = true;
+
+        public static void SetGenType(BPRLayerGenType genType)
+        {
+            GenType = genType;
+
+            FolderStructureReader.TMFolderStructure= GetFolderStractRoot(genType);
+
+        }
+       private  static string GetFolderStractRoot(BPRLayerGenType genType)
+        {
+            if(genType == BPRLayerGenType.BuildDto)
+           
+            return @"
+{
+  ""Controllers"": [ ""Api"", ""Auth"", ""Admin"" ],
+  ""Repositories"": [ ""Base"", ""Builder""],
+ 
+  ""DyModels"": [
+    {
+      ""VM"": [],
+      ""Dto"": {
+        ""Build"": [ ""Request"", ""Response""  ]
+        
+      }
+     
+    }
+  ],
+
+  ""Validators"": [ ""Conditions"" ],
+  ""Schedulers"": []
+}";
+            else if (genType == BPRLayerGenType.ShareDto)
+
+                return @"
+{
+  ""Controllers"": [ ""Api"", ""Auth"", ""Admin"" ],
+  ""Repositories"": [ ""Base"", ""Builder"", ""Share"" ],
+  
+  ""DyModels"": [
+    {
+      ""VM"": [],
+      ""Dto"": {
+        ""Build"": [ ""Request"", ""Response""  ],
+        ""Share"": [ ""Request"", ""Response"" ]
+      }
+     
+    }
+  ],
+
+  ""Validators"": [ ""Conditions"" ],
+  ""Schedulers"": []
+}";
+           
+
+
+            return @"
+{
+  ""Controllers"": [ ""Api"", ""Auth"", ""Admin"" ],
+  ""Repositories"": [ ""Base"", ""Builder"", ""Share"" ],
+  ""Services"": [ ""Email"", ""Logging"" ],
+  ""DyModels"": [
+    {
+      ""VM"": [],
+      ""Dto"": {
+        ""Build"": [ ""Request"", ""Response""  ],
+        ""Share"": [ ""Request"", ""Response"" ]
+      },
+      ""Dso"": [ ""Request"", ""Response"" ]
+    }
+  ],
+
+  ""Validators"": [ ""Conditions"" ],
+  ""Schedulers"": []
+}";
+        }
+
+    }
 
     public class ConfigCode
     {
-
+       
         private static Dictionary<string, Action<FolderEventArgs>>? _folderGenerators;
 
         private static void LoadFolderGenerators()
@@ -49,7 +148,7 @@ namespace AutoGenerator.Code.Config
             }
             else if (e.Node.Name == "Dso")
             {
-
+               
                 DsoGenerator.GeneratWithFolder(e);
             }
 

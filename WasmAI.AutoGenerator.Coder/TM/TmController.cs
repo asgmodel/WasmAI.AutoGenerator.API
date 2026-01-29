@@ -1,4 +1,5 @@
 ﻿using AutoGenerator.ApiFolder;
+using AutoGenerator.Code.Config;
 using Newtonsoft.Json.Linq;
 using System.Text;
 
@@ -7,20 +8,42 @@ namespace AutoGenerator.TM
 
     public class TmController
     {
+        static string getlayer()
+        {
+
+            return  BPRLAYERGENERATOR.GenType.ToString();
+
+        }
+
+        static  string isIUedso()
+        {
+            return BPRLAYERGENERATOR.GenType==BPRLayerGenType.Dso ? "IUse":BPRLayerGenType.ShareDto== BPRLAYERGENERATOR.GenType?"I":"";
+        }            
+        
+        static string getnameobjlayer()
+        {
+            if (BPRLAYERGENERATOR.GenType == BPRLayerGenType.Dso)
+                return "Service";
+            else if (BPRLAYERGENERATOR.GenType == BPRLayerGenType.BuildDto)
+                return "BuilderRepository";
+            else
+                return "ShareRepository";
+        }   
         public static string GetTemplateBPRController(List<string> usings, string namespaceName, string className)
         {
             var root = ApiFolderInfo.ROOT.Name;
 
 			var nameObj = className.ToLower();
+            var  nameLayer= getlayer();
+            var  naemusedso= isIUedso();
+            var nameObjLayer = getnameobjlayer();
 
-
-
-			return @$"
+            return @$"
     //[ApiExplorerSettings(GroupName = ""{root}"")]
-    [Route(""api/{root}/{namespaceName}/[controller]"")]
+    [Route(""api/{root}/[controller]"")]
     [ApiController]
-    public class {className}Controller : BaseBPRControllerLayer<{className}RequestDso,
-                                                           {className}ResponseDso,
+    public class {className}Controller : BaseBPRControllerLayer<{className}Request{nameLayer},
+                                                           {className}Response{nameLayer},
                                                            {className}CreateVM,
                                                            {className}OutputVM,
                                                            {className}UpdateVM,
@@ -30,10 +53,10 @@ namespace AutoGenerator.TM
     {{
     
 
-        private readonly IUse{className}Service _service;
+        private readonly {naemusedso}{className}{nameObjLayer} _service;
     
 
-        public {className}Controller(IMapper mapper, ILoggerFactory logger, IUse{className}Service bPR) : base(mapper, logger, bPR)
+        public {className}Controller(IMapper mapper, ILoggerFactory logger, {naemusedso}{className}{nameObjLayer} bPR) : base(mapper, logger, bPR)
         {{
             _service = bPR;
        }}
@@ -55,25 +78,27 @@ namespace AutoGenerator.TM
                 }
             }
             var nameObj = className.ToLower();
-
-            if(ApiFolderInfo.IsBPR)
+            var nameLayer = getlayer();
+            var naemusedso = isIUedso();
+            var nameObjLayer = getnameobjlayer();
+            if (ApiFolderInfo.IsBPR)
                 return GetTemplateBPRController(usings, namespaceName, className);
 
 			// Generate and return the controller template by replacing the namespace and className variables.
 			return $@"
 {usingStatements.ToString()}
     //[ApiExplorerSettings(GroupName = ""{root}"")]
-    [Route(""api/{root}/{namespaceName}/[controller]"")]
+    [Route(""api/{root}/[controller]"")]
     [ApiController]
     public class {className}Controller : ControllerBase
     {{
-        private readonly IUse{className}Service _{nameObj}Service;
+        private readonly {naemusedso}{className}{nameObjLayer} _{nameObj}{nameObjLayer};
         private readonly IMapper _mapper;
         private readonly ILogger _logger;
 
-        public {className}Controller(IUse{className}Service {nameObj}Service, IMapper mapper, ILoggerFactory logger)
+        public {className}Controller({naemusedso}{className}{nameObjLayer} {nameObj}{nameObjLayer}, IMapper mapper, ILoggerFactory logger)
         {{
-            _{nameObj}Service = {nameObj}Service;
+            _{nameObj}{nameObjLayer} = {nameObj}{nameObjLayer};
             _mapper = mapper;
             _logger = logger.CreateLogger(typeof({className}Controller).FullName);
         }}
@@ -88,7 +113,7 @@ namespace AutoGenerator.TM
             try
             {{
                 _logger.LogInformation(""Fetching all {className}s..."");
-                var result = await _{nameObj}Service.GetAllAsync();
+                var result = await _{nameObj}{nameObjLayer}.GetAllAsync();
                 var items = _mapper.Map<List<{className}OutputVM>>(result);
                 return Ok(items);
             }}
@@ -115,7 +140,7 @@ namespace AutoGenerator.TM
             try
             {{
                 _logger.LogInformation(""Fetching {className} with ID: {{id}}"", id);
-                var entity = await _{nameObj}Service.GetByIdAsync(id);
+                var entity = await _{nameObj}{nameObjLayer}.GetByIdAsync(id);
                 if (entity == null)
                 {{
                     _logger.LogWarning(""{className} not found with ID: {{id}}"", id);
@@ -147,7 +172,7 @@ namespace AutoGenerator.TM
             try
             {{
                 _logger.LogInformation(""Fetching {className} with ID: {{id}}"", id);
-                var entity = await _{nameObj}Service.GetByIdAsync(id);
+                var entity = await _{nameObj}{nameObjLayer}.GetByIdAsync(id);
                 if (entity == null)
                 {{
                     _logger.LogWarning(""{className} not found with ID: {{id}}"", id);
@@ -181,7 +206,7 @@ namespace AutoGenerator.TM
             try
             {{
                
-                var {nameObj}s = await _{nameObj}Service.GetAllAsync();
+                var {nameObj}s = await _{nameObj}{nameObjLayer}.GetAllAsync();
                 if ({nameObj}s == null)
                 {{
                     _logger.LogWarning(""{className}s not found  by  "");
@@ -220,8 +245,8 @@ namespace AutoGenerator.TM
             try
             {{
                 _logger.LogInformation(""Creating new {className} with data: {{@model}}"", model);
-                var item = _mapper.Map<{className}RequestDso>(model);
-                var createdEntity = await _{nameObj}Service.CreateAsync(item);
+                var item = _mapper.Map<{className}Request{nameLayer}>(model);
+                var createdEntity = await _{nameObj}{nameObjLayer}.CreateAsync(item);
                 var createdItem = _mapper.Map<{className}OutputVM>(createdEntity);
                 return Ok(createdItem);
             }}
@@ -253,8 +278,8 @@ namespace AutoGenerator.TM
             try
             {{
                 _logger.LogInformation(""Creating multiple {className}s."");
-                var items = _mapper.Map<List<{className}RequestDso>>(models);
-                var createdEntities = await _{nameObj}Service.CreateRangeAsync(items);
+                var items = _mapper.Map<List<{className}Request{nameLayer}>>(models);
+                var createdEntities = await _{nameObj}{nameObjLayer}.CreateRangeAsync(items);
                 var createdItems = _mapper.Map<List<{className}OutputVM>>(createdEntities);
                 return Ok(createdItems);
             }}
@@ -286,8 +311,8 @@ namespace AutoGenerator.TM
             try
             {{
                 _logger.LogInformation(""Updating {className} with ID: {{id}}"", model?.Id);
-                var item = _mapper.Map<{className}RequestDso>(model);
-                var updatedEntity = await _{nameObj}Service.UpdateAsync(item);
+                var item = _mapper.Map<{className}Request{nameLayer}>(model);
+                var updatedEntity = await _{nameObj}{nameObjLayer}.UpdateAsync(item);
                 if (updatedEntity == null)
                 {{
                     _logger.LogWarning(""{className} not found for update with ID: {{id}}"", model?.Id);
@@ -319,7 +344,7 @@ namespace AutoGenerator.TM
             try
             {{
                 _logger.LogInformation(""Deleting {className} with ID: {{id}}"", id);
-                await _{nameObj}Service.DeleteAsync(id);
+                await _{nameObj}{nameObjLayer}.DeleteAsync(id);
                 return NoContent();
             }}
             catch (Exception ex)
@@ -339,7 +364,7 @@ namespace AutoGenerator.TM
             try
             {{
                 _logger.LogInformation(""Counting {className}s..."");
-                var count = await _{nameObj}Service.CountAsync();
+                var count = await _{nameObj}{nameObjLayer}.CountAsync();
                 return Ok(count);
             }}
             catch (Exception ex)
@@ -355,13 +380,14 @@ namespace AutoGenerator.TM
 
         public static string GeneratecontrolTemplate(string infvalid, string vm, string sers, string controlTemplate)
         {
+            var nameObjLayer = getnameobjlayer();
             string description = $@"
 // ==========================================
 // 🔧 Task Objective
 // ==========================================
 
 You are required to generate clean, professional C# code that connects different layers of the application
-(Controller, Service, and Repository) and uses a shared validation component called 'IConditionChecker' 
+(Controller, {nameObjLayer}, and Repository) and uses a shared validation component called 'IConditionChecker' 
 to evaluate business rules and state conditions across models.
 
 The code must inject and use this interface:
@@ -390,7 +416,7 @@ linked intelligently with the controller/service logic using the _checker:
 /* ViewModels */
 {vm}
 
-/* Services */
+/* {nameObjLayer}s */
 {sers}
 
 // ==========================================
@@ -485,10 +511,10 @@ namespace YourApp.Controllers
     [Route(""api/[controller]"")]
     public class ExampleController : ControllerBase
     {{
-        private readonly IExampleService _service;
+        private readonly IExample{nameObjLayer} _service;
         private readonly IConditionChecker _checker;
 
-        public ExampleController(IExampleService service, IConditionChecker checker)
+        public ExampleController(IExample{nameObjLayer} service, IConditionChecker checker)
         {{
             _service = service;
             _checker = checker;
@@ -530,7 +556,7 @@ namespace YourApp.Controllers
 
 Generate:
 - Controller logic using services
-- Service logic using repository + _checker
+- {nameObjLayer} logic using repository + _checker
 - Conditions implemented using CheckAsync/CheckAndResultAsync
 - Integration with ViewModel and generated conditions above
 ";
@@ -543,13 +569,14 @@ Generate:
 
         public static string GenerateConditionTaskDescription(string infvalid, string vm, string sers)
         {
+            var nameObjLayer = getnameobjlayer();
             var description = $@"
 // ==========================================
 // 🔧 Task Objective
 // ==========================================
 
 You are required to generate clean, professional C# code that connects different layers of the application
-(Controller, Service, and Repository) and uses a shared validation component called 'IConditionChecker' 
+(Controller, {nameObjLayer}, and Repository) and uses a shared validation component called 'IConditionChecker' 
 to evaluate business rules and state conditions across models.
 
 The code must inject and use this interface:
@@ -578,7 +605,7 @@ linked intelligently with the controller/service logic using the _checker:
 /* ViewModels */
 {vm}
 
-/* Services */
+/* {nameObjLayer}s */
 {sers}
 
 // ==========================================
@@ -667,7 +694,7 @@ else
 
 Generate:
 - Controller logic using services
-- Service logic using repository + _checker
+- {nameObjLayer} logic using repository + _checker
 - Conditions implemented using CheckAsync/CheckAndResultAsync
 - Integration with ViewModel and generated conditions above
 ";

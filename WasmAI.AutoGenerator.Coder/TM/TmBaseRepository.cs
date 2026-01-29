@@ -6,7 +6,7 @@ namespace AutoGenerator.TM
     public  class TmBaseRepository
     {
 
-
+       
         public static string GetTmBaseRepository(string nameShareTM,bool isBPR=false ,TmOptions options = null)
         {
 

@@ -1,5 +1,4 @@
-﻿
-using AutoGenerator;
+﻿using AutoGenerator;
 using AutoGenerator.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -48,11 +47,11 @@ namespace WasmAI.PaymentProvider.Data
                       .OnDelete(DeleteBehavior.Cascade);
 
             });
-                modelBuilder.Entity<Product>()
-                .HasOne(p => p.Provider)
-                .WithMany(pp => pp.Products)
-                .HasForeignKey(p => p.ProviderId)
-                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Product>()
+            .HasOne(p => p.Provider)
+            .WithMany(pp => pp.Products)
+            .HasForeignKey(p => p.ProviderId)
+            .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<PricePlan>()
                 .HasOne(pp => pp.Product)
@@ -66,7 +65,7 @@ namespace WasmAI.PaymentProvider.Data
                 .HasForeignKey(pm => pm.CustomerId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-           
+
 
             modelBuilder.Entity<Refund>()
                .HasOne(r => r.Payment)

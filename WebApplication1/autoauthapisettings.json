@@ -1,0 +1,51 @@
+{
+  "autoAuthWasmOptions": {
+    "apiOptions": {
+      "title": "Lahja API",
+      "version": "v1",
+      "enableSwagger": true,
+      "enableCors": true,
+      "allowedOrigins": [
+        "http://localhost:3000",
+        "http://localhost:4200",
+        "https://lahjai.net"
+      ],
+      "rateLimit": {
+        "enabled": true,
+        "limit": 100,
+        "periodMinutes": 1
+      }
+    },
+    "apiSalla": {
+      "baseUrl": "https://salla.lahjai.net",
+      "apiVersion": "v2",
+      "timeoutSeconds": 30,
+      "retryCount": 3,
+      "fullApiUrl": "https://salla.lahjai.net/api/v2"
+    },
+    "apiOAuth": {
+      "clientId": "b784cf14e28fe8fc1c6fbac28f8d6b91",
+      "clientSecret": "secret_6e46e8a6b16d81a48c51a3df5a1ed504c5f4b634471820475520d4f7514f985f",
+      "appName": "lahja",
+      "usePkce": true,
+      "scopeSeparator": " ",
+      "identityServerBaseUrl": "https://auth.lahjai.net",
+      "apiScope": "lahja_api_app",
+      "allowScopes": [
+        "salla_api_app"
+      
+      ],
+      "scopesString": "salla_api_app "
+    },
+    "jwtSettings": {
+      "keyId": "D5966B9792FE28029F484D649F2F5EA1",
+      "modulus": "sV2RkdlvlzG9WqD-SmYUqVocQV_FiFWFEVVMB_c_-5S_miKur-3-_-XeI4x3BFY96m_gyy5guvL5gW-x1Oa84txrWD7NdtbGNC9CCMyHkSe4XMivg3AOHfCylmeQAHL91FtjtXiUp3I39waPtYTrVPpYRmM1I8lT81TPh8hy-jpBayrdjuvjOjrfT6E0aJPq0twhfDNjhWYd5UszVjwhPY4LLutzLXbHOMHkFyMUMrXiF_n3kI0RTOPUABJvfp79L9T0dcK9kLsMpc3f381gqf6-2J5Kvq6ZtdMcMXt2k5x20_cExpA1VP5p1uKQY_tcsPCG0lRmydK8I_2KzsbwzQ",
+      "exponent": "AQAB",
+      "issuer": "https://auth.lahjai.net",
+      "audience": "lahja_api_app",
+      "validateLifetime": true,
+      "clockSkewMinutes": 5,
+      "clockSkew": "00:05:00"
+    }
+  }
+}
