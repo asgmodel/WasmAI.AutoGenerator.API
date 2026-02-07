@@ -35,7 +35,7 @@
 	
 	<PropertyGroup>
 		<PackageId>WasmAI.AutoGenerator.API</PackageId>
-		<Version>1.0.0-b</Version>
+		<Version>1.0.0-c</Version>
 
 		<Authors>Anas Al-Tawil</Authors>
 

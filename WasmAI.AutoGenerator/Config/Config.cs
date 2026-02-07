@@ -94,7 +94,7 @@ namespace AutoGenerator
             where TContext : DbContext
             where TUser : class
         {
-            if (option.IsAutoAuth && File.Exists(AutoAuthConfig.PathToAutoauthapisettings))
+            if (option.IsAutoAuth && File.Exists(AutoAuthConfig.ConfigFileName))
                 serviceCollection.AddAutoAuthWasm();
             return serviceCollection.AddAutoBuilderApiCore<TContext, TUser>(option);
         }
@@ -157,7 +157,7 @@ namespace AutoGenerator
                 {
                     if (arrgs.Contains("e:auth"))
                     {
-                        if (!File.Exists(AutoAuthConfig.PathToAutoauthapisettings))
+                        if (!File.Exists(AutoAuthConfig.ConfigFileName))
                             CreateConfigFile.GenerateBothConfigs();
                         art.Remove("e:auth");
                     }
@@ -253,7 +253,7 @@ namespace AutoGenerator
             if (options == null)
                 options= new AutoGeneratorCustomApiOptions();
 
-            if (options.IsAutoAuth&&File.Exists(AutoAuthConfig.PathToAutoauthapisettings))
+            if (options.IsAutoAuth&&File.Exists(AutoAuthConfig.ConfigFileName))
                 app.UseAutoAuthWasm();
 
             return app;
@@ -292,7 +292,7 @@ namespace AutoGenerator
             {
                 options.UseSqlServer(connectionString2);
             });
-            services.AddIdentity<TUser, IdentityRole<string>>().AddEntityFrameworkStores<TContext>().AddDefaultTokenProviders();
+            //services.AddIdentity<TUser, IdentityRole<string>>().AddEntityFrameworkStores<TContext>().AddDefaultTokenProviders();
             return services;
         }
         private static IServiceCollection AddAutoGeneratorCodeCustomApi(this IServiceCollection serviceCollection, AutoGeneratorCustomApiOptions? options = null)

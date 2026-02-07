@@ -5,55 +5,21 @@ namespace WasmAI.AutoGenerator.Auth;
 public static class AutoAuthConfig
 {
     private static AutoAuthWasmOptions _options;
-    private static string _currentEnvironment;
-    public static string PathToAutoauthapisettings = "autoauthapisettings.json";
+    public static readonly string ConfigFileName = "autoauthapisettings.json";
 
-    public static AutoAuthWasmOptions Options => _options ?? LoadConfigForEnvironment();
+    public static AutoAuthWasmOptions Options => _options ?? LoadConfig();
 
-    public static string CurrentEnvironment => _currentEnvironment ?? GetEnvironmentName();
-
-    private static string GetEnvironmentName()
+    private static AutoAuthWasmOptions LoadConfig()
     {
-        return Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
-            ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
-            ?? "Production";
-    }
-
-    private static AutoAuthWasmOptions LoadConfigForEnvironment()
-    {
-        var environment = GetEnvironmentName();
-        _currentEnvironment = environment;
-
-        return environment.ToLower() switch
+        try
         {
-            "development" => LoadDevelopmentConfig(),
-            _ => LoadDefaultConfig()
-        };
-    }
-
-    private static AutoAuthWasmOptions LoadDefaultConfig()
-    {
-        return LoadFromFile(PathToAutoauthapisettings);
-    }
-
-    private static AutoAuthWasmOptions LoadDevelopmentConfig()
-    {
-        var devFile = PathToAutoauthapisettings;
-
-        if (File.Exists(devFile))
-        {
-            try
-            {
-                return LoadFromFile(devFile);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Warning: Failed to load development config: {ex.Message}");
-                Console.WriteLine("Falling back to default config...");
-            }
+            return LoadFromFile(ConfigFileName);
         }
-
-        return LoadDefaultConfig();
+        catch (Exception ex)
+        {
+            Console.WriteLine($"❌ Error loading config: {ex.Message}");
+            return new AutoAuthWasmOptions();
+        }
     }
 
     private static AutoAuthWasmOptions LoadFromFile(string configFile)
@@ -61,70 +27,8 @@ public static class AutoAuthConfig
         if (!File.Exists(configFile))
         {
             Console.WriteLine($"Config file not found: {configFile}");
-            return new AutoAuthWasmOptions();
-        }
-
-        try
-        {
-            // **التصحيح هنا: قراءة محتوى الملف أولاً**
-            string jsonContent = File.ReadAllText(configFile);
-
-            if (string.IsNullOrWhiteSpace(jsonContent))
-            {
-                Console.WriteLine($"Config file is empty: {configFile}");
-                return new AutoAuthWasmOptions();
-            }
-
-            // التحقق من صحة JSON
-            try
-            {
-                using JsonDocument doc = JsonDocument.Parse(jsonContent);
-            }
-            catch (JsonException jsonEx)
-            {
-                Console.WriteLine($"Invalid JSON in {configFile}: {jsonEx.Message}");
-                return new AutoAuthWasmOptions();
-            }
-
-            // **التصحيح: استخدام jsonContent بدلاً من configFile**
-            var configRoot = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(
-                jsonContent,
-                new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                });
-
-            if (configRoot == null || !configRoot.ContainsKey("autoAuthWasmOptions"))
-            {
-                Console.WriteLine($"AutoAuthWasmOptions section not found in {configFile}");
-                return new AutoAuthWasmOptions();
-            }
-
-            var optionsJson = configRoot["autoAuthWasmOptions"].GetRawText();
-            _options = JsonSerializer.Deserialize<AutoAuthWasmOptions>(
-                optionsJson,
-                new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                }) ?? new AutoAuthWasmOptions();
-
-            Console.WriteLine($"✅ Loaded config from: {configFile} (Environment: {CurrentEnvironment})");
-            return _options;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"❌ Error loading config from {configFile}: {ex.Message}");
-            return new AutoAuthWasmOptions();
-        }
-    }
-
-    // نسخة أبسط من LoadFromFile بدون Dictionary<string, JsonElement>
-    private static AutoAuthWasmOptions LoadFromFileSimple(string configFile)
-    {
-        if (!File.Exists(configFile))
-        {
-            Console.WriteLine($"Config file not found: {configFile}");
-            return new AutoAuthWasmOptions();
+            Console.WriteLine("Creating default config file...");
+            CreateDefaultConfigFile(configFile);
         }
 
         try
@@ -150,9 +54,14 @@ public static class AutoAuthConfig
             Console.WriteLine($"✅ Loaded config from: {configFile}");
             return _options;
         }
+        catch (JsonException jsonEx)
+        {
+            Console.WriteLine($"Invalid JSON in {configFile}: {jsonEx.Message}");
+            return new AutoAuthWasmOptions();
+        }
         catch (Exception ex)
         {
-            Console.WriteLine($"❌ Error loading config: {ex.Message}");
+            Console.WriteLine($"❌ Error loading config from {configFile}: {ex.Message}");
             return new AutoAuthWasmOptions();
         }
     }
@@ -160,32 +69,13 @@ public static class AutoAuthConfig
     public static void Reload()
     {
         _options = null;
-        LoadConfigForEnvironment();
-    }
-
-    public static void ForceReload(string configFile)
-    {
-        _options = null;
-        _currentEnvironment = null;
-        LoadFromFile(configFile);
-    }
-
-    public static AutoAuthWasmOptions GetConfigForEnvironment(string environment)
-    {
-        if (environment.Equals(CurrentEnvironment, StringComparison.OrdinalIgnoreCase))
-            return Options;
-
-        return environment.ToLower() switch
-        {
-            "development" => LoadDevelopmentConfig(),
-            _ => LoadDefaultConfig()
-        };
+        LoadConfig();
     }
 
     public static void PrintCurrentConfig()
     {
         var options = Options;
-        Console.WriteLine($"=== Current Configuration (Environment: {CurrentEnvironment}) ===");
+        Console.WriteLine($"=== Current Configuration ===");
         Console.WriteLine($"API Title: {options.ApiOptions.Title}");
         Console.WriteLine($"API Version: {options.ApiOptions.Version}");
         Console.WriteLine($"Swagger Enabled: {options.ApiOptions.EnableSwagger}");
@@ -196,29 +86,15 @@ public static class AutoAuthConfig
         Console.WriteLine($"OAuth Scopes: {options.ApiOAuth.ScopesString}");
         Console.WriteLine($"JWT Issuer: {options.JwtSettings.Issuer}");
         Console.WriteLine($"JWT Audience: {options.JwtSettings.Audience}");
-        Console.WriteLine("==========================================");
+        Console.WriteLine("=============================");
     }
 
-    // دالة لإنشاء ملف إعدادات فارغ إذا لم يوجد
-    public static void EnsureConfigFileExists(string filePath = null)
+    public static void EnsureConfigFileExists()
     {
-        filePath ??= PathToAutoauthapisettings;
-
-        if (!File.Exists(filePath))
+        if (!File.Exists(ConfigFileName))
         {
-            Console.WriteLine($"Creating default config file: {filePath}");
-            CreateDefaultConfigFile(filePath);
-        }
-
-        // التحقق من ملف Development إذا كنا في بيئة التطوير
-        if (GetEnvironmentName().Equals("Development", StringComparison.OrdinalIgnoreCase))
-        {
-            string devFile = "autoauthapisettings.Development.json";
-            if (!File.Exists(devFile))
-            {
-                Console.WriteLine($"Creating development config file: {devFile}");
-                CreateDevelopmentConfigFile(devFile);
-            }
+            Console.WriteLine($"Creating default config file: {ConfigFileName}");
+            CreateDefaultConfigFile(ConfigFileName);
         }
     }
 
@@ -274,72 +150,6 @@ public static class AutoAuthConfig
         };
 
         var json = JsonSerializer.Serialize(defaultConfig, new JsonSerializerOptions
-        {
-            WriteIndented = true,
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-        });
-
-        File.WriteAllText(filePath, json);
-    }
-
-    private static void CreateDevelopmentConfigFile(string filePath)
-    {
-        var devConfig = new
-        {
-            AutoAuthWasmOptions = new
-            {
-                ApiOptions = new
-                {
-                    Title = "API - Development",
-                    Version = "v1",
-                    EnableSwagger = true,
-                    EnableCors = true,
-                    AllowedOrigins = new[]
-                    {
-                        "http://localhost:3000",
-                        "http://localhost:4200",
-                        "http://localhost:5000",
-                        "https://localhost:5001"
-                    },
-                    RateLimit = new
-                    {
-                        Enabled = false,
-                        Limit = 1000,
-                        PeriodMinutes = 1
-                    }
-                },
-                ApiSalla = new
-                {
-                    BaseUrl = "https://salla.dev.lahjai.net",
-                    ApiVersion = "v2",
-                    TimeoutSeconds = 60,
-                    RetryCount = 5
-                },
-                ApiOAuth = new
-                {
-                    ClientId = "dev_client_id",
-                    ClientSecret = "dev_client_secret",
-                    AppName = "lahja-dev",
-                    UsePkce = true,
-                    ScopeSeparator = " ",
-                    IdentityServerBaseUrl = "https://auth.dev.lahjai.net",
-                    ApiScope = "lahja_api_app",
-                    AllowScopes = new[] { "salla_api_app", "offline_access" }
-                },
-                JwtSettings = new
-                {
-                    KeyId = "DEV_KEY_ID",
-                    Modulus = "DEV_MODULUS",
-                    Exponent = "DEV_EXPONENT",
-                    Issuer = "https://auth.dev.lahjai.net",
-                    Audience = "lahja_api_app",
-                    ValidateLifetime = true,
-                    ClockSkewMinutes = 10
-                }
-            }
-        };
-
-        var json = JsonSerializer.Serialize(devConfig, new JsonSerializerOptions
         {
             WriteIndented = true,
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase
