@@ -53,7 +53,7 @@
 ## 📦 Installation
 
 ```bash
-dotnet add package WasmAI.AutoGenerator --version 1.1.0
+dotnet add package WasmAI.AutoGenerator.API --version 1.0.0-c
 ```
 
 👉 After installation, add the necessary namespace:
